@@ -5,7 +5,7 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 error_log("URI: $uri, Method: $method");
-echo "Debug - URI: $uri, Method: $method<br>";
+//echo "Debug - URI: $uri, Method: $method<br>";
 
 $controller = new ProductController();
 
@@ -13,10 +13,12 @@ $path = str_replace('/kiemtr2_nhom09/public', '', $uri);
 
 if ($path === '/' || $path === '/index.php' || $path === '') {
     if ($method === 'GET') {
-        $controller->index();
+        require_once __DIR__ . '/../views/product/list.php';
     }
 } elseif ($path === '/index.php/api/products' || $path === '/api/products') {
-    if ($method === 'POST') {
+    if ($method === 'GET') {
+        $controller->apiGetProducts();
+    } elseif ($method === 'POST') {
         $controller->apiCreateProduct();
     } elseif ($method === 'PUT') {
         $controller->apiUpdateProduct();
