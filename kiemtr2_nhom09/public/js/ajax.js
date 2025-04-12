@@ -1,0 +1,1 @@
+// xử lý dữ liệu bằng ajax nếu có
