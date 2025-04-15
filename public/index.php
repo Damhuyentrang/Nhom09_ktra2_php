@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/../controllers/productController.php';
 
+// 👉 Thêm nút Đăng nhập và Đăng ký
+echo '<div style="margin-bottom: 20px;">
+        <a href="/kiemtr2_nhom09/frontend_login.html"><button>Đăng nhập</button></a>
+        <a href="/kiemtr2_nhom09/register.html"><button>Đăng ký</button></a>
+      </div>';
+
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
