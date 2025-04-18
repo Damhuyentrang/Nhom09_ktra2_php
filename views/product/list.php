@@ -10,7 +10,13 @@
         .product-image { max-width: 100px; }
         .form-container { margin-bottom: 30px; }
         .table-container { margin-top: 20px; }
-        .pagination { justify-content: center; }
+        
+        /* Tùy chỉnh phân trang */
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
     </style>
 </head>
 <body>
@@ -18,9 +24,9 @@
         <h1 class="text-center mb-4">Product List</h1>
 
         <!-- Form tìm kiếm -->
-        <form method="GET" action="" class="mb-4">
+        <form method="GET" action="" class="mb-4" id="search-form">
             <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Search products..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" id="search-input" name="search" class="form-control" placeholder="Search products...">
                 <button type="submit" class="btn btn-primary">Search</button>
             </div>
         </form>
@@ -39,42 +45,8 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php if (!empty($products)): ?>
-                        <?php foreach ($products as $product): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($product['id']); ?></td>
-                                <td><?php echo htmlspecialchars($product['name']); ?></td>
-                                <td><?php echo htmlspecialchars($product['quantity']); ?></td>
-                                <td>
-                                    <?php if (!empty($product['image_url'])): ?>
-                                        <img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="Product Image" class="product-image">
-                                    <?php else: ?>
-                                        No Image
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($product['description'] ?? 'No description'); ?></td>
-                                <td><?php echo htmlspecialchars($product['price']); ?></td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm edit-product" 
-                                            data-id="<?php echo $product['id']; ?>" 
-                                            data-name="<?php echo htmlspecialchars($product['name']); ?>" 
-                                            data-quantity="<?php echo $product['quantity']; ?>" 
-                                            data-image_url="<?php echo htmlspecialchars($product['image_url'] ?? ''); ?>" 
-                                            data-description="<?php echo htmlspecialchars($product['description'] ?? ''); ?>" 
-                                            data-price="<?php echo $product['price']; ?>" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editProductModal">Edit</button>
-                                    <button class="btn btn-danger btn-sm delete-product" 
-                                            data-id="<?php echo $product['id']; ?>">Delete</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="7" class="text-center">No products found.</td>
-                        </tr>
-                    <?php endif; ?>
+                <tbody id="product-table-body">
+                    <!-- Dữ liệu sẽ được thêm bằng js -->
                 </tbody>
             </table>
         </div>
@@ -82,17 +54,11 @@
         <!-- Phân trang -->
         <nav aria-label="Page navigation">
             <ul class="pagination">
-                <?php for ($i = 1; $i <= $pages; $i++): ?>
-                    <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>">
-                            <?php echo $i; ?>
-                        </a>
-                    </li>
-                <?php endfor; ?>
+                <!-- Phân trang sẽ được thêm bằng js -->
             </ul>
         </nav>
 
-        <!-- Form thêm sản phẩm và upload hình ảnh (di chuyển xuống dưới cùng) -->
+        <!-- Form thêm sản phẩm và upload hình ảnh -->
         <div class="form-container card p-4 mt-4">
             <h2 class="h4 mb-3">Add New Product</h2>
             <form id="add-product-form">
@@ -171,173 +137,9 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <script>
-        // Xử lý form thêm sản phẩm bằng AJAX
-        document.getElementById('add-product-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form = new FormData(this);
-            const data = {
-                name: form.get('name'),
-                quantity: parseInt(form.get('quantity')),
-                image_url: form.get('image_url') || null,
-                description: form.get('description'),
-                price: parseFloat(form.get('price'))
-            };
-
-            fetch('/kiemtr2_nhom09/public/index.php/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (result.status === 'success') {
-                    alert('Product added successfully!');
-                    location.reload();
-                } else {
-                    alert('Error: ' + result.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while adding the product: ' + error.message);
-            });
-        });
-
-        // Xử lý form upload hình ảnh bằng AJAX
-        document.getElementById('upload-image-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            fetch('/kiemtr2_nhom09/public/index.php/api/upload-image', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (result.status === 'success') {
-                    alert('Image uploaded successfully!');
-                    document.getElementById('image_url').value = result.image_url;
-                } else {
-                    alert('Error: ' + result.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while uploading the image: ' + error.message);
-            });
-        });
-
-        // Xử lý nút Edit
-        document.querySelectorAll('.edit-product').forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const name = this.getAttribute('data-name');
-                const quantity = this.getAttribute('data-quantity');
-                const image_url = this.getAttribute('data-image_url');
-                const description = this.getAttribute('data-description');
-                const price = this.getAttribute('data-price');
-
-                document.getElementById('edit-id').value = id;
-                document.getElementById('edit-name').value = name;
-                document.getElementById('edit-quantity').value = quantity;
-                document.getElementById('edit-image_url').value = image_url;
-                document.getElementById('edit-description').value = description;
-                document.getElementById('edit-price').value = price;
-            });
-        });
-
-        // Xử lý form chỉnh sửa sản phẩm bằng AJAX
-        document.getElementById('edit-product-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form = new FormData(this);
-            const data = {
-                id: parseInt(form.get('id')),
-                name: form.get('name'),
-                quantity: parseInt(form.get('quantity')),
-                image_url: form.get('image_url') || null,
-                description: form.get('description'),
-                price: parseFloat(form.get('price'))
-            };
-
-            fetch('/kiemtr2_nhom09/public/index.php/api/products', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (result.status === 'success') {
-                    alert('Product updated successfully!');
-                    location.reload();
-                } else {
-                    alert('Error: ' + result.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the product: ' + error.message);
-            });
-        });
-
-        // Xử lý nút Delete
-        document.querySelectorAll('.delete-product').forEach(button => {
-            button.addEventListener('click', function() {
-                if (!confirm('Are you sure you want to delete this product?')) {
-                    return;
-                }
-
-                const id = this.getAttribute('data-id');
-                const data = { id: parseInt(id) };
-
-                fetch('/kiemtr2_nhom09/public/index.php/api/products', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(result => {
-                    if (result.status === 'success') {
-                        alert('Product deleted successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while deleting the product: ' + error.message);
-                });
-            });
-        });
-    </script>
+    <script src="/kiemtr2_nhom09/public/js/ajax.js"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+name: Run PHP Tests
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Run basic PHP check
+        run: php -v && php -l index.php # hoặc file PHP chính bạn muốn check cú pháp
