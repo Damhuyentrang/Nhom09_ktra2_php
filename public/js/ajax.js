@@ -25,8 +25,10 @@ async function loadProducts(page = 1, search = '') {
         if (!data || !data.products) {
             throw new Error('Invalid data format: products array not found');
         }
+
         displayProducts(data.products);
         updatePagination(data.current_page, data.total_pages, search);
+        
     } catch (error) {
         console.error('Error fetching products:', error);
         alert('An error occurred while fetching products: ' + error.message);
