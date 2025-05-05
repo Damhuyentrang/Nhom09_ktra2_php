@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => 'db170509f7af2b1c835e9af5875654cf8c43698d',
+        'pretty_version' => 'dev-Quyngtest',
+        'version' => 'dev-Quyngtest',
+        'reference' => 'b77a01e9ca6f36abec2415b0613b3b8ff5a6e060',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => 'db170509f7af2b1c835e9af5875654cf8c43698d',
+            'pretty_version' => 'dev-Quyngtest',
+            'version' => 'dev-Quyngtest',
+            'reference' => 'b77a01e9ca6f36abec2415b0613b3b8ff5a6e060',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
