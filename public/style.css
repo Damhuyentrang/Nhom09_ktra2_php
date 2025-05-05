@@ -1,0 +1,37 @@
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+.btn-edit {
+    background-color: #f0ad4e;
+    color: #fff;
+}
+.btn-edit:hover {
+    background-color: #ec971f;
+}
+.btn-delete {
+    background-color: #d9534f;
+    color: #fff;
+}
+.btn-delete:hover {
+    background-color: #c9302c;
+}
+.btn-paypal {
+    background-color: #0070ba;
+    color: #fff;
+}
+.btn-paypal:hover {
+    background-color: #005ea6;
+}
+.btn-momo {
+    background-color: #a50064;
+    color: #fff;
+}
+.btn-momo:hover {
+    background-color: #8c0054;
+}
