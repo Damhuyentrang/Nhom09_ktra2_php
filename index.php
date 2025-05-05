@@ -1,80 +1,109 @@
-<?php
-include_once './config/database.php';
-require "../vendor/autoload.php";
-use \Firebase\JWT\JWT;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 50px;
+        }
 
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
 
+        h2 {
+            text-align: center;
+        }
 
-$email = '';
-$password = '';
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
 
-$databaseService = new DatabaseService();
-$conn = $databaseService->getConnection();
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
 
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
+        button:hover {
+            background-color: #0056b3;
+        }
 
-$data = json_decode(file_get_contents("php://input"));
+        pre {
+            margin-top: 20px;
+            background: #eee;
+            padding: 10px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
 
-$email = $data->email;
-$password = $data->password;
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
 
-$table_name = 'Users';
+            <button type="submit">Login</button>
+        </form>
 
-$query = "SELECT id, first_name, last_name, password FROM " . $table_name . " WHERE email = ? LIMIT 0,1";
+        <pre id="response"></pre>
+    </div>
 
-$stmt = $conn->prepare( $query );
-$stmt->bindParam(1, $email);
-$stmt->execute();
-$num = $stmt->rowCount();
+    <script>
 
-if($num > 0){
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $id = $row['id'];
-    $firstname = $row['first_name'];
-    $lastname = $row['last_name'];
-    $password2 = $row['password'];
-    
-    if(password_verify($password, $password2))
-    {
-        $secret_key = "YOUR_SECRET_KEY"; // hoặc getenv('JWT_SECRET_KEY');
-        $issuer_claim = "THE_ISSUER";
-        $audience_claim = "THE_AUDIENCE";
-        $issuedat_claim = time();
-        $notbefore_claim = $issuedat_claim + 1;
-        $expire_claim = $issuedat_claim + 3600;
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
 
-        $token = array(
-            "iss" => $issuer_claim,
-            "aud" => $audience_claim,
-            "iat" => $issuedat_claim,
-            "nbf" => $notbefore_claim,
-            "exp" => $expire_claim,
-            "data" => array(
-                "id" => $id,
-                "first_name" => $firstname,
-                "last_name" => $lastname,
-                "email" => $email
-            )
-        );
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-        $jwt = JWT::encode($token, $secret_key, 'HS256');
+        fetch("http://localhost/kiemtr2_nhom09/api/login.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("response").textContent = JSON.stringify(data, null, 2);
 
-        http_response_code(200);
-        echo json_encode(
-            array(
-                "message" => "Successful login.",
-                "jwt" => $jwt
-            ));
-    }
-    else{
-        
-        http_response_code(402);
-        echo json_encode(array("message" => "Login failed.", "password" => $password, "password2" => $password2));
-    }
-}
-?>
+            // Nếu login thành công, chuyển hướng
+            if (data.message === "Successful login." && data.jwt) {
+                // Lưu JWT nếu cần: localStorage.setItem("jwt", data.jwt);
+                window.location.href = "http://localhost/kiemtr2_nhom09/product";
+            }
+        })
+        .catch(error => {
+            document.getElementById("response").textContent = "Error: " + error;
+        });
+    });
+</script>   
+
+</body>
+</html>

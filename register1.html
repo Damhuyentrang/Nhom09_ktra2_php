@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f2f2f2;
+        }
+        
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        button {
+            flex: 1;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button.secondary {
+            background-color: #777;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        #result {
+            white-space: pre-wrap;
+            background: #eee;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 style="text-align:center;">User Registration</h2>
+    <form id="registerForm">
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" required>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+
+        <div class="button-group">
+            <button type="submit">Register</button>
+            <button type="button" class="secondary" onclick="window.location.href='login.html'">Back to login</button>
+        </div>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const first_name = document.getElementById("first_name").value;
+            const last_name = document.getElementById("last_name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            fetch("http://localhost/kiemtr2_nhom09/api/register.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        first_name,
+                        last_name,
+                        email,
+                        password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message && data.message.toLowerCase().includes("success")) {
+                        document.getElementById("result").textContent = "✅ Đăng ký thành công! Đang chuyển đến trang đăng nhập...";
+                        setTimeout(() => {
+                            window.location.href = "http://localhost/kiemtr2_nhom09/index.php";
+                        }, 2000);
+                    } else {
+                        document.getElementById("result").textContent = "❌ " + (data.message || "Đăng ký thất bại.");
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("result").textContent = "❌ Lỗi: " + error;
+                });
+        });
+    </script>
+</body>
+
+</html>
