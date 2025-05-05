@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // public/js/ajax.js
 
 // Biến toàn cục
@@ -304,3 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Page loaded, fetching products...');
     loadProducts(currentPage, searchQuery);
 });
+=======
+// xử lý dữ liệu bằng ajax nếu có
+>>>>>>> b77a01e (Khởi tạo project và tổ chức lại thư mục)
